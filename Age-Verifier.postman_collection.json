@@ -57,6 +57,17 @@
 							"for(let key of Object.keys(responseData)){",
 							"  var expectedKey= key;",
 							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"boolean\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
 							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
 							"tests[\"Validate user is allowed to drink if the age is 12\"] = responseData[expectedKey] === userIsAllowedToDrink;",
 							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
@@ -72,8 +83,95 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
+							"let max = 17",
+							"let min = 0",
+							"",
 							"let userIsAllowedToDrink = pm.environment.get(\"responseIsTrueOrFalse\");",
-							"let userAge = Math.floor(Math.random() * (17 - 0 + 1) + 0);",
+							"let userAge = Math.floor(Math.random() * (max - min + 1) + min);",
+							"console.log(userAge);",
+							"pm.environment.set(\"responseIsTrueOrFalse\", false);",
+							"console.log(pm.environment.get(\"responseIsTrueOrFalse\"));",
+							"pm.environment.set(\"userAge\", userAge);",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"age\":{{userAge}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}age/verifier",
+					"host": [
+						"{{baseURL}}age"
+					],
+					"path": [
+						"verifier"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postUserAge_Number that is decimal above 0 to 18 [BUG]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let userIsAllowedToDrink = pm.environment.get(\"responseIsTrueOrFalse\");",
+							"",
+							"var responseData = JSON.parse(responseBody);",
+							"",
+							"tests[\"Validate status code\"] = responseCode.code === 200;",
+							"for(let key of Object.keys(responseData)){",
+							"  var expectedKey= key;",
+							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"boolean\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
+							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
+							"tests[\"Validate user is allowed to drink if the age is 12\"] = responseData[expectedKey] === userIsAllowedToDrink;",
+							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let max = 17;",
+							"let min = 0;",
+							"",
+							"let userIsAllowedToDrink = pm.environment.get(\"responseIsTrueOrFalse\");",
+							"let userAge = (Math.random() * (max - min + 1) + min);",
 							"console.log(userAge);",
 							"pm.environment.set(\"responseIsTrueOrFalse\", false);",
 							"console.log(pm.environment.get(\"responseIsTrueOrFalse\"));",
@@ -127,6 +225,17 @@
 							"for(let key of Object.keys(responseData)){",
 							"  var expectedKey= key;",
 							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"boolean\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
 							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
 							"tests[\"Validate user is allowed to drink if the age is 12\"] = responseData[expectedKey] === userIsAllowedToDrink;",
 							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
@@ -180,6 +289,81 @@
 			"response": []
 		},
 		{
+			"name": "postUserAge_Number that is more than four number[BUG]s",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseData = JSON.parse(responseBody);",
+							"",
+							"tests[\"Validate status code\"] = responseCode.code === 200;",
+							"for(let key of Object.keys(responseData)){",
+							"  var expectedKey= key;",
+							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"null\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
+							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
+							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let min = 999;",
+							"let max = 1110;",
+							"",
+							"let userAge = Math.floor(Math.random() * (max - min + 1) + min);",
+							"console.log(userAge);",
+							"pm.environment.set(\"responseIsTrueOrFalse\", true);",
+							"console.log(pm.environment.get(\"responseIsTrueOrFalse\"));",
+							"pm.environment.set(\"userAge\", userAge);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"age\":{{userAge}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}age/verifier",
+					"host": [
+						"{{baseURL}}age"
+					],
+					"path": [
+						"verifier"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "postUserAge_Number above 50 to 100 [BUG]",
 			"event": [
 				{
@@ -195,6 +379,17 @@
 							"for(let key of Object.keys(responseData)){",
 							"  var expectedKey= key;",
 							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"null\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
 							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
 							"tests[\"Validate user is allowed to drink if the age is 12\"] = responseData[expectedKey] === null;",
 							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
@@ -237,6 +432,152 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n        \"age\":{{userAge}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}age/verifier",
+					"host": [
+						"{{baseURL}}age"
+					],
+					"path": [
+						"verifier"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postUserAge_Number  that is decimal 18 to 50 [BUG]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let userIsAllowedToDrink = pm.environment.get(\"responseIsTrueOrFalse\");",
+							"",
+							"var responseData = JSON.parse(responseBody);",
+							"",
+							"tests[\"Validate status code\"] = responseCode.code === 200;",
+							"for(let key of Object.keys(responseData)){",
+							"  var expectedKey= key;",
+							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"boolean\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
+							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
+							"tests[\"Validate user is allowed to drink if the age is 12\"] = responseData[expectedKey] === userIsAllowedToDrink;",
+							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let min = 18;",
+							"let max = 50;",
+							"",
+							"let userAge = (Math.random() * (max - min + 1) + min);",
+							"console.log(userAge);",
+							"pm.environment.set(\"responseIsTrueOrFalse\", true);",
+							"console.log(pm.environment.get(\"responseIsTrueOrFalse\"));",
+							"pm.environment.set(\"userAge\", userAge);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"age\":{{userAge}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}age/verifier",
+					"host": [
+						"{{baseURL}}age"
+					],
+					"path": [
+						"verifier"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postUserAge_String",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseData = JSON.parse(responseBody);",
+							"",
+							"tests[\"Validate status code\"] = responseCode.code === 200;",
+							"for(let key of Object.keys(responseData)){",
+							"  var expectedKey= key;",
+							"};",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isValid\": {\"type\":\"null\"}",
+							"    },",
+							"    \"required\" : [\"isValid\"]",
+							"};",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    pm.response.to.have.jsonSchema(schema)",
+							"});",
+							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
+							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"age\":\"242342\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -318,17 +659,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"let userIsAllowedToDrink = pm.environment.get(\"responseIsTrueOrFalse\");",
+							"// Status should be 415",
+							"tests[\"Validate status code\"] = responseCode.code === 415;",
 							"",
-							"var responseData = JSON.parse(responseBody);",
-							"",
-							"tests[\"Validate status code\"] = responseCode.code === 200;",
-							"for(let key of Object.keys(responseData)){",
-							"  var expectedKey= key;",
-							"};",
-							"tests[\"Validate JSON has keys \"] =  expectedKey === \"isValid\";",
-							"tests[\"Validate user is allowed to drink if the age is 12\"] = responseData[expectedKey] === userIsAllowedToDrink;",
-							"tests[\"Validate the header is of JSON\"] = postman.getResponseHeader(\"Content-Type\") == \"application/json; charset=utf-8\";",
 							"",
 							"",
 							"",
@@ -343,7 +676,7 @@
 					"script": {
 						"exec": [
 							"let userIsAllowedToDrink = pm.environment.get(\"responseIsTrueOrFalse\");",
-							"let userAge = Math.floor(Math.random() * (17 - 0 + 1) + 0);",
+							"let userAge = Math.floor(Math.random() * (50 - 0 + 1) + 0);",
 							"console.log(userAge);",
 							"pm.environment.set(\"responseIsTrueOrFalse\", false);",
 							"console.log(pm.environment.get(\"responseIsTrueOrFalse\"));",
@@ -366,7 +699,7 @@
 					"raw": "{\n        \"age\":{{userAge}}\n}",
 					"options": {
 						"raw": {
-							"language": "json"
+							"language": "xml"
 						}
 					}
 				},
@@ -383,7 +716,7 @@
 			"response": []
 		},
 		{
-			"name": "postUserAge_Number above 50 to 100 with wrong url",
+			"name": "postUserAge_Number above 0 to 50 with wrong url",
 			"event": [
 				{
 					"listen": "test",
@@ -404,8 +737,8 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"let min = 51;",
-							"let max = 100;",
+							"let min = 0;",
+							"let max = 50;",
 							"",
 							"let userAge = Math.floor(Math.random() * (max - min + 1) + min);",
 							"pm.environment.set(\"userAge\", userAge);"
